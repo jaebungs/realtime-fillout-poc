@@ -16,7 +16,7 @@ export default function Home() {
       <EditorNav handleModeChange={handleModeChange} />
       <div className="w-96">
         <EmailInput text="Email" label="Email" placeholder="Enter your email" formMode={currentMode} />
-        <ShortAnswerInput text="Short Answer" label="Short Answer" placeholder="Enter your short answer" />
+        <ShortAnswerInput text="Short Answer" ariaLabel="Short Answer" placeholder="Enter your short answer" formMode={currentMode} />
       </div>
     </div>
   )
