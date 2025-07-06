@@ -45,7 +45,7 @@ const EmailInput = (props: EmailInputProps) => {
                             id="email-placeholder"
                             name="email-placeholder"
                             aria-label={label}
-                            className={`w-full px-4 py-2 border rounded-md ${!emailValid ? 'border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 border rounded-md`}
                             value={emailPlaceholder}
                             onChange={(e) => setEmailPlaceholder(e.target.value)}
                             placeholder={emailPlaceholder}

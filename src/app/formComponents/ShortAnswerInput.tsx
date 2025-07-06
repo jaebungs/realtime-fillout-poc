@@ -38,7 +38,7 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
                         type="text"
                         name="short-answer-placeholder"
                         aria-label={ariaLabel}
-                        className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                        className={`w-full px-4 py-2 border rounded-md`}
                         value={shortAnswerPlaceholder}
                         onChange={(e) => setShortAnswerPlaceholder(e.target.value)}
                         placeholder={shortAnswerPlaceholder}
