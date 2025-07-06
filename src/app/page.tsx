@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <div className="">
       <EditorNav handleModeChange={handleModeChange} />
-      <div className="w-96">
+      <div className="w-96 sm:pb-4 flex items-center flex-col h-full gap-1">
         <EmailInput text="Email" label="Email" placeholder="Enter your email" formMode={currentMode} />
         <ShortAnswerInput text="Short Answer" ariaLabel="Short Answer" placeholder="Enter your short answer" formMode={currentMode} />
       </div>

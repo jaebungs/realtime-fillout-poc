@@ -25,39 +25,49 @@ const EmailInput = (props: EmailInputProps) => {
     return (
         <div className="w-full flex flex-col">
             {formMode === 'edit' && (
-                <>
-                <label>
-                    <input name='email-label' 
-                        onChange={(e) => setEmailLabel(e.target.value)}    
-                    />
-                </label>
-                <input 
-                    type="email"
-                    name="email"
-                    aria-label={label}
-                    className={`px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
-                    value={emailPlaceholder}
-                    onChange={(e) => setEmailPlaceholder(e.target.value)}
-                    placeholder={emailPlaceholder}
-                />
-                </>
+                <div className="form-text-input">
+                    <label htmlFor='email-label' className="w-full">
+                        <input name='email-label'
+                            id="email-label"
+                            className='title-text w-full'
+                            onChange={(e) => setEmailLabel(e.target.value)}    
+                        />
+                    </label>
+                    <label htmlFor='email-placeholder' className="w-full">
+                        <input 
+                            type="text"
+                            id="email-placeholder"
+                            name="email-placeholder"
+                            aria-label={label}
+                            className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                            value={emailPlaceholder}
+                            onChange={(e) => setEmailPlaceholder(e.target.value)}
+                            placeholder={emailPlaceholder}
+                        />
+                    </label>
+                </div>
 
             )}
 
             {/* Preview Email input */}
             {formMode === 'preview' && (
-                <>
-                    <label htmlFor="email">{emailLabel}</label>
+                <div className="form-text-input">
+                    <label htmlFor="email-preview"
+                        className='title-text text-left w-full'
+                    >
+                        {emailLabel}
+                    </label>
                     <input 
+                        id="email-preview"
                         type="email"
                         name="email"
                         aria-label={label}
-                        className={`px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                        className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
                         value={email}
                         onChange={handleChange}
                         placeholder={emailPlaceholder}
                     />
-                </>
+                </div>
             )}
 
         </div>

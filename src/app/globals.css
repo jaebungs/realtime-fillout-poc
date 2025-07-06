@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.title-text {
+  font-size: 1.125rem;
+  line-height: 1.3em;
+  font-weight: 500;
+}
+
+.form-text-input {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}

@@ -23,42 +23,49 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
         setShortAnswer(e.target.value)
     }
     return (
-        <div>
+        <div className="w-full flex flex-col">
 
             {formMode === 'edit' && (
-                <>
+                <div className="form-text-input">
                     <input 
                         type='text'
                         name='short-answer-label'
+                        className="w-full"
                         value={shortAnswerLabel}
                         onChange={(e) => setshortAnswerLabel(e.target.value)}
                     />
-                    <input 
+                    <input
                         type="text"
                         name="short-answer-placeholder"
                         aria-label={ariaLabel}
-                        className={`px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                        className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
                         value={shortAnswerPlaceholder}
                         onChange={(e) => setShortAnswerPlaceholder(e.target.value)}
                         placeholder={shortAnswerPlaceholder}
                     />
-                </>
+                </div>
             )}
 
             {/* Preview short answer */}
             {formMode === 'preview' && (
-                <>
-                    <label htmlFor="text">{shortAnswerLabel}</label>
+                <div className="form-text-input">
+                    <label 
+                        htmlFor="short-answer"
+                        className="title-text text-left w-full"
+                    >
+                        {shortAnswerLabel}
+                    </label>
                     <input 
                         type="text"
                         name="short-answer"
+                        id="short-answer"
                         aria-label={ariaLabel}
-                        className={`px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                        className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
                         value={shortAnswer}
                         onChange={handleChange}
                         placeholder={shortAnswerPlaceholder}
                     />
-                </>
+                </div>
             )}
 
         </div>
