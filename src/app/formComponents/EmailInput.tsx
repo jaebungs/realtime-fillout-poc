@@ -1,6 +1,7 @@
 'use client'
 import { useState } from "react"
 import { FormMode } from "@/app/types/formMode"
+import { validateEmail } from "@/app/utils/emailValidation"
 
 interface EmailInputProps {
     text: string
@@ -8,19 +9,24 @@ interface EmailInputProps {
     placeholder?: string
     formMode: FormMode
     required?: boolean
-    error?: boolean
-    errorMessage?: string
+    // error?: boolean
+    // errorMessage?: string
 }
 
 const EmailInput = (props: EmailInputProps) => {
-    const { text, label, placeholder, formMode, required, error, errorMessage } = props
+    const { text, label, placeholder, formMode, required } = props
     const [email, setEmail] = useState('')
     const [emailLabel, setEmailLabel] = useState(text)
     const [emailPlaceholder, setEmailPlaceholder] = useState(placeholder)
+    const [emailValid, setEmailValid] = useState(true)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         console.log(e.target.value)
         setEmail(e.target.value)
+        const { isValid, errorMessage } = validateEmail(e.target.value)
+        setEmailValid(isValid)
+        setErrorMessage(errorMessage)
     }
     return (
         <div className="w-full flex flex-col">
@@ -39,7 +45,7 @@ const EmailInput = (props: EmailInputProps) => {
                             id="email-placeholder"
                             name="email-placeholder"
                             aria-label={label}
-                            className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                            className={`w-full px-4 py-2 border rounded-md ${!emailValid ? 'border-red-500' : ''}`}
                             value={emailPlaceholder}
                             onChange={(e) => setEmailPlaceholder(e.target.value)}
                             placeholder={emailPlaceholder}
@@ -57,16 +63,22 @@ const EmailInput = (props: EmailInputProps) => {
                     >
                         {emailLabel}
                     </label>
-                    <input 
+                    <input
                         id="email-preview"
                         type="email"
                         name="email"
                         aria-label={label}
-                        className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                        className={`w-full px-4 py-2 border rounded-md ${!emailValid ? 'border-red-500' : ''}`}
                         value={email}
                         onChange={handleChange}
                         placeholder={emailPlaceholder}
                     />
+                    {!emailValid && (
+                        <div className="w-full text-[var(--warning)]" role="status" aria-live="polite">
+                            {errorMessage}
+                        </div>
+                    )}
+
                 </div>
             )}
 
