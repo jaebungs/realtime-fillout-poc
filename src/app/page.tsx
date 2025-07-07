@@ -1,22 +1,16 @@
 'use client'
 import { useState } from 'react'
 import EditorNav from '@/app/components/EditorNav'
-import EmailInput from "@/app/formComponents/EmailInput"
-import ShortAnswerInput from "@/app/formComponents/ShortAnswerInput"
-import { FormMode } from "@/app/types/formMode"
+import ComponentPanel from '@/app/components/ComponentPanel'
+import EditCanvas from '@/app/components/EditCanvas'
 
 export default function Home() {
-  const [currentMode, setCurrentMode] = useState<FormMode>('edit')
-
-  const handleModeChange = (mode: FormMode) => {
-    setCurrentMode(mode)
-  }
   return (
     <div className="">
-      <EditorNav handleModeChange={handleModeChange} />
-      <div className="w-96 sm:pb-4 flex items-center flex-col h-full gap-1">
-        <EmailInput text="Email" label="Email" placeholder="Enter your email" formMode={currentMode} />
-        <ShortAnswerInput text="Short Answer" ariaLabel="Short Answer" placeholder="Enter your short answer" formMode={currentMode} />
+      <EditorNav/>
+      <div className="flex">
+        <ComponentPanel/>
+        <EditCanvas />
       </div>
     </div>
   )
