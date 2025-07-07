@@ -15,6 +15,8 @@ Built with NextJS, Typescript, Tailwind
 3. Setup State management tool
 4. Create Editor area (canvas are and component palette)
 5. Add draggable feature
+ - Since it's a simple Drag and drop, I'll use HTML APIs
+ - Every component have the same hover style, drag and edit pop overs. Make a wrapper component for this.
 6. Add components add/delete
 7. Add real-time collaboration
     - User presnece indicator
