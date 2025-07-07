@@ -1,12 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { FormMode } from '@/app/types/formMode'
-
-interface FormComponent {
-    id: string,
-    order: number,
-    componentName: string
-}
+import { FormComponent } from '@/app/types/formComponent'
 
 interface FormStore {
     formComponents: FormComponent[]
@@ -17,10 +12,23 @@ interface FormStore {
     clearFormComponents: () => void
 }
 
+const testInitialCompoennt = [
+    {
+        id: 'a',
+        order: 1,
+        componentName: 'EmailInput'
+    },
+    {
+        id: 'b',
+        order: 2,
+        componentName: 'ShortAnswerInput'
+    }
+]
+
 export const useFormStore = create<FormStore>()(
   devtools(
     (set, get) => ({
-        formComponents: [],
+        formComponents: testInitialCompoennt,
         formMode: 'edit',
         changeFormMode: (mode) => set({ formMode: mode }),
         addFormComponent: (component) => set((state) => ({
