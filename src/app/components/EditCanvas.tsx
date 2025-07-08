@@ -6,22 +6,54 @@ import { useFormStore } from '@/app/store/formStore'
 
 const EditCanvas = () => {
     const formComponents = useFormStore(state => state.formComponents)
-  const formMode = useFormStore(state => state.formMode)
+    const formMode = useFormStore(state => state.formMode)
+    const selectedComponentId = useFormStore(state => state.selectedComponentId)
+    const selectComponent = useFormStore(state => state.selectComponent)
 //   const { addFormComponent } = useFormStore
 
-  const onDragStart = (e:  React.DragEvent<HTMLDivElement>) => {
-    console.log(e)
+  const onDragStart = (e: React.DragEvent<HTMLDivElement>, componentId: string) => {
+    // e.dataTransfer.setData('text/plain', componentId)
+    console.log('onDragStart', componentId)
   }
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
 
+  const onDrop = (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
+    e.preventDefault()
+    // const draggedId = e.dataTransfer.getData('text/plain')
+    console.log('onDrop', { targetIndex })
+  }
+
+  const handleComponentClick = (componentId: string) => {
+    selectComponent(componentId)
   }
 
   return (
     <div className="w-96 sm:pb-4 flex items-center flex-col h-full gap-1">
       { 
         formComponents.map((form, index) => {
-          return <div key={form.id}>{renderComponent(form)}</div>
+          const isSelected = selectedComponentId === form.id
+          return <div 
+            key={form.id}
+            className={`${isSelected 
+              ? 'border-2 border-[rgba(238,212,63,0.7)]' 
+              : 'border border-transparent hover:border-[rgba(238,212,63,0.7)]'
+            }`}
+          >
+            <div className="w-full ">+</div>
+            <div 
+              draggable
+              onDragStart={(e) => onDragStart(e, form.id)}
+              onDragOver={onDragOver}
+              onDrop={(e) => onDrop(e, index)}
+              onClick={() => handleComponentClick(form.id)}
+              className="cursor-pointer"
+            >
+              {renderComponent(form)}
+            </div>
+          </div>
         })
       }
   </div>
