@@ -31,13 +31,15 @@ const EditCanvas = () => {
   }
 
   return (
-    <div className="w-96 sm:pb-4 flex items-center flex-col h-full gap-1">
+    <div className="flex w-full h-full justify-center overflow-hidden rounded-xl border-[0.5px] border-gray-300 shadow-lg">
+      <div className="flex w-full flex-col justify-center items-center max-w-[660px]">
       { 
         formComponents.map((form, index) => {
           const isSelected = selectedComponentId === form.id
           return <div 
             key={form.id}
-            className={`${isSelected 
+            className={`w-full
+              ${isSelected 
               ? 'border-2 border-[rgba(238,212,63,0.7)]' 
               : 'border border-transparent hover:border-[rgba(238,212,63,0.7)]'
             }`}
@@ -56,7 +58,8 @@ const EditCanvas = () => {
           </div>
         })
       }
-  </div>
+      </div>
+    </div>
   )
 }
 

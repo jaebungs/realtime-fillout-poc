@@ -10,7 +10,9 @@ export default function Home() {
       <EditorNav/>
       <div className="flex">
         <ComponentPanel/>
-        <EditCanvas />
+        <div className="flex p-5 w-full pb-3">
+          <EditCanvas />
+        </div>
       </div>
     </div>
   )
