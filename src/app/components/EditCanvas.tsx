@@ -23,11 +23,11 @@ const EditCanvas = () => {
     e.preventDefault()
   }
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>, form: FormComponent, targetIndex: number) => {
+  const onDrop = (e: React.DragEvent<HTMLDivElement>, targetComponent: FormComponent) => {
     e.preventDefault()
 
     if (selectedComponent) {
-      changeFormOrder(selectedComponent, targetIndex)
+      changeFormOrder(selectedComponent, targetComponent)
     }
   }
 
@@ -46,7 +46,7 @@ const EditCanvas = () => {
             draggable
             onDragStart={(e) => onDragStart(e, form)}
             onDragOver={onDragOver}
-            onDrop={(e) => onDrop(e, form, index)}
+            onDrop={(e) => onDrop(e, form)}
             onClick={() => handleComponentClick(form)}
             className={`w-full flex items-center
               ${isSelected 

@@ -9,7 +9,7 @@ interface FormStore {
     selectedComponent: FormComponent,
     changeFormMode: (mode: FormMode) => void
     addFormComponent: (component: FormComponent) => void
-    changeFormOrder: (component: FormComponent, targetIndex: number) => void
+    changeFormOrder: (draggedComponent: FormComponent, dropTargetComponent: FormComponent) => void
     removeFormComponent: (id: string) => void
     clearFormComponents: () => void
     selectComponent: (component: FormComponent) => void
@@ -44,13 +44,23 @@ export const useFormStore = create<FormStore>()(
         addFormComponent: (component) => set((state) => ({
             formComponents: [...state.formComponents, component].sort((a, b) => a.order - b.order)
         })),
-        changeFormOrder: (component, targetIndex) => set(state => {
-            if (!component) return state
-            if (component.order === targetIndex) return state
-            const filteredComponents = state.formComponents.filter(form => form.id !== component.id)
-            const newComponents = [...filteredComponents]
-            newComponents.splice(targetIndex, 0, { ...component, order: targetIndex })
+        changeFormOrder: (draggedComponent, dropTargetComponent) => set(state => {
+            if (!draggedComponent) return state
+            console.log(draggedComponent.order, dropTargetComponent.order)
+            if (draggedComponent.order === dropTargetComponent.order) return state
 
+            const dragComponentPosition = draggedComponent.order
+            const targetPosition = dropTargetComponent.order
+            // move the dragging component to the new position
+            const filteredComponents = state.formComponents.filter(form => form.id !== draggedComponent.id)
+            const newComponents = [...filteredComponents]
+            newComponents.splice(targetPosition, 0, { ...draggedComponent, order: targetPosition })
+
+            // update the order property of the component that is being replaced
+            const replacedComponent = newComponents.find(form => form.id === dropTargetComponent.id)
+            if (replacedComponent) {
+                replacedComponent.order = dragComponentPosition
+            }
             return { formComponents: newComponents }
         }),
         removeFormComponent: (id) => set((state) => ({
