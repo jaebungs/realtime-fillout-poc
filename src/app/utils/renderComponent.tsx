@@ -1,12 +1,9 @@
 import { FormComponent } from '@/app/types/formComponent'
 import EmailInput from "@/app/formComponents/EmailInput"
 import ShortAnswerInput from "@/app/formComponents/ShortAnswerInput"
-import { useFormStore } from '@/app/store/formStore'
 import { FormMode } from '@/app/types/formMode'
 
-export const renderComponent = (component: FormComponent) => {
-    const formMode = useFormStore(state => state.formMode)
-    
+export const renderComponent = (component: FormComponent, formMode: FormMode) => {
     switch(component.componentName) {
         case 'EmailInput':
             return <EmailInput 

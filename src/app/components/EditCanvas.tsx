@@ -8,15 +8,13 @@ import { FormComponent } from '@/app/types/formComponent'
 const EditCanvas = () => {
   const formComponents = useFormStore(state => state.formComponents)
   const formMode = useFormStore(state => state.formMode)
-  // const selectedComponent = useFormStore(state => state.selectedComponent)
-  // const selectComponent = useFormStore(state => state.selectComponent)
+  const selectedComponent = useFormStore(state => state.selectedComponent)
   const changeFormOrder = useFormStore(state => state.changeFormOrder)
-  const [ selectedComponent, setSelectedComponent ] = useState<FormComponent | null>(null)
-
+  const removeFormComponent = useFormStore(state => state.removeFormComponent)
+  const selectComponent = useFormStore(state => state.selectComponent)
 
   const onDragStart = (e: React.DragEvent<HTMLDivElement>, form : FormComponent) => {
-
-    setSelectedComponent(form)
+    selectComponent(form)
   }
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -32,15 +30,19 @@ const EditCanvas = () => {
   }
 
   const handleComponentClick = (form: FormComponent) => {
-    setSelectedComponent(form)
+    selectComponent(form)
+  }
+
+  const handleRemoveComponent = (form: FormComponent, e: React.MouseEvent) => {
+    e.stopPropagation()
+    removeFormComponent(form)
   }
 
   return (
     <div className="flex w-full h-full justify-center overflow-hidden rounded-xl border-[0.5px] border-gray-300 shadow-lg">
-      <div className="flex w-full flex-col justify-center items-center max-w-[660px]">
+      <div className="relative flex w-full flex-col justify-center items-center max-w-[660px]">
       { 
         formComponents.map((form, index) => {
-          const isSelected = selectedComponent?.id === form.id
           return <div 
             key={form.id}
             draggable
@@ -49,7 +51,7 @@ const EditCanvas = () => {
             onDrop={(e) => onDrop(e, form)}
             onClick={() => handleComponentClick(form)}
             className={`w-full flex items-center
-              ${isSelected 
+              ${selectedComponent?.id === form.id 
               ? 'border-2 border-[rgba(238,212,63,0.7)]' 
               : 'border border-transparent hover:border-[rgba(238,212,63,0.7)]'
             }`}
@@ -60,8 +62,17 @@ const EditCanvas = () => {
             <div 
               className="w-full py-[6px] cursor-pointer"
             >
-              {renderComponent(form)}
+              {renderComponent(form, formMode)}
             </div>
+            {selectedComponent?.id === form.id && (
+              <div className="absolute right-[-50px] bg-white shadow-xl rounded-full p-1 px-[3px] z-[2] border border-gray-100 gap-[2px]">
+                <button className="hover:bg-red-50 rounded-full p-[6px] flex justify-center items-center cursor-pointer text-red-500"
+                  onClick={(e) => handleRemoveComponent(form, e)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" className="h-[22px] w-[22px] "><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </div>
+            )}
           </div>
         })
       }

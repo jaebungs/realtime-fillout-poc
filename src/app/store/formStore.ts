@@ -6,13 +6,13 @@ import { FormComponent } from '@/app/types/formComponent'
 interface FormStore {
     formComponents: FormComponent[]
     formMode: FormMode,
-    selectedComponent: FormComponent,
+    selectedComponent: FormComponent | null,
     changeFormMode: (mode: FormMode) => void
     addFormComponent: (component: FormComponent) => void
     changeFormOrder: (draggedComponent: FormComponent, dropTargetComponent: FormComponent) => void
-    removeFormComponent: (id: string) => void
-    clearFormComponents: () => void
-    selectComponent: (component: FormComponent) => void
+    removeFormComponent: (form: FormComponent) => void
+    selectComponent: (component: FormComponent | null) => void
+    clearSelectedComponent: () => void
 }
 
 const testInitialCompoennt = [
@@ -63,11 +63,23 @@ export const useFormStore = create<FormStore>()(
             }
             return { formComponents: newComponents }
         }),
-        removeFormComponent: (id) => set((state) => ({
-            formComponents: state.formComponents.filter(comp => comp.id !== id)
-        })),
+        removeFormComponent: (form) => set((state) => {
+            const newFormComponents = state.formComponents.filter(comp => comp.id !== form.id)
+
+            // Update the order of remaining components to maintain proper sequence
+            const updatedComponents = newFormComponents.map((comp, index) => ({
+                ...comp,
+                order: index
+            }))
+            
+            return {
+                formComponents: updatedComponents,
+                selectedComponent: null
+            }
+        }),
         
-        clearFormComponents: () => set({ formComponents: [] })
+        clearFormComponents: () => set({ formComponents: [] }),
+        clearSelectedComponent: () => set({ selectedComponent: null })
     }),
     {
       name: 'form-store',
