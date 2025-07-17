@@ -39,8 +39,7 @@ const EditCanvas = () => {
   }
 
   return (
-    <div className="flex w-full h-full justify-center overflow-hidden rounded-xl border-[0.5px] border-gray-300 shadow-lg">
-      <div className="relative flex w-full flex-col justify-center items-center max-w-[660px]">
+    <div className="relative flex w-full flex-col justify-center items-center max-w-[660px]">
       { 
         formComponents.map((form, index) => {
           return <div 
@@ -50,7 +49,7 @@ const EditCanvas = () => {
             onDragOver={onDragOver}
             onDrop={(e) => onDrop(e, form)}
             onClick={() => handleComponentClick(form)}
-            className={`w-full flex items-center
+            className={`w-full flex items-center py-1 pr-3
               ${selectedComponent?.id === form.id 
               ? 'border-2 border-[rgba(238,212,63,0.7)]' 
               : 'border border-transparent hover:border-[rgba(238,212,63,0.7)]'
@@ -65,7 +64,7 @@ const EditCanvas = () => {
               {renderComponent(form, formMode)}
             </div>
             {selectedComponent?.id === form.id && (
-              <div className="absolute right-[-50px] bg-white shadow-xl rounded-full p-1 px-[3px] z-[2] border border-gray-100 gap-[2px]">
+              <div className="absolute right-[-55px] bg-white shadow-xl rounded-full p-1 px-[3px] z-[2] border border-gray-100 gap-[2px]">
                 <button className="hover:bg-red-50 rounded-full p-[6px] flex justify-center items-center cursor-pointer text-red-500"
                   onClick={(e) => handleRemoveComponent(form, e)}
                 >
@@ -76,7 +75,6 @@ const EditCanvas = () => {
           </div>
         })
       }
-      </div>
     </div>
   )
 }
