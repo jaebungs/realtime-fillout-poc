@@ -4,7 +4,7 @@ import { useFormStore } from '@/app/store/formStore'
 const EditorNav = () => {
     const { changeFormMode } = useFormStore()
   return (
-    <div className='pl-2 flex items-center w-full justify-between'>
+    <div className='pl-2 flex items-center w-full justify-between bg-gray-50  border-b-[0.5px] border-gray-300'>
         <div className='font-medium flex items-center py-[11px] md:min-w-[310px] largeXl:min-w-[354px] largeXlCustom:min-w-[424px]'>
             Fillout
         </div>
