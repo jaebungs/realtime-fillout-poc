@@ -2,48 +2,40 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { FormMode } from '@/app/types/formMode'
 import { FormComponent } from '@/app/types/formComponent'
+import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
+import { v4 as uuidv4 } from 'uuid'
 
 interface FormStore {
     formComponents: FormComponent[]
     formMode: FormMode,
     selectedComponent: FormComponent | null,
     changeFormMode: (mode: FormMode) => void
-    addFormComponent: (component: FormComponent) => void
+    addFormComponent: (name: keyof typeof initialFieldAttributes, order: number) => void
     changeFormOrder: (draggedComponent: FormComponent, dropTargetComponent: FormComponent) => void
     removeFormComponent: (form: FormComponent) => void
     selectComponent: (component: FormComponent | null) => void
     clearSelectedComponent: () => void
 }
 
-const testInitialCompoennt = [
-    {
-        id: 'a',
-        order: 0,
-        componentName: 'EmailInput'
-    },
-    {
-        id: 'b',
-        order: 1,
-        componentName: 'ShortAnswerInput'
-    },
-    {
-        id: 'c',
-        order: 2,
-        componentName: 'EmailInput'
-    },
-]
-
 export const useFormStore = create<FormStore>()(
   devtools(
     (set, get) => ({
-        formComponents: testInitialCompoennt,
+        formComponents: [],
         formMode: 'edit',
         selectedComponent: null,
         changeFormMode: (mode) => set({ formMode: mode }),
         selectComponent: (component) => set({ selectedComponent: component }),
-        addFormComponent: (component) => set((state) => ({
-            formComponents: [...state.formComponents, component].sort((a, b) => a.order - b.order)
-        })),
+        addFormComponent: (name, order) => set((state) => {
+            const component = {
+                id: uuidv4(),
+                order: order,
+                componentName: name,
+                ...initialFieldAttributes[name]
+            }
+
+            const newFormComponents = [...state.formComponents, component].sort((a, b) => a.order - b.order)
+            return {formComponents : newFormComponents}
+        }),
         changeFormOrder: (draggedComponent, dropTargetComponent) => set(state => {
             if (!draggedComponent) return state
             console.log(draggedComponent.order, dropTargetComponent.order)
