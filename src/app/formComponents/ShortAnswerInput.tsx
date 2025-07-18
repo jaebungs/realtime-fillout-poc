@@ -1,16 +1,7 @@
 'use client'
 import { useState } from "react"
 import { FormMode } from "@/app/types/formMode"
-
-interface ShortAnswerInputProps {
-    text: string
-    ariaLabel?: string
-    placeholder?: string
-    formMode: FormMode
-    required?: boolean
-    error?: boolean
-    errorMessage?: string
-}
+import { ShortAnswerInputProps } from "@/app/types/formComponent"
 
 const shortAnswerInput = (props: ShortAnswerInputProps) => {
     const { text, ariaLabel, placeholder, formMode, required, error, errorMessage } = props

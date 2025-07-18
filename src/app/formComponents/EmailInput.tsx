@@ -1,20 +1,11 @@
 'use client'
 import { useState } from "react"
 import { FormMode } from "@/app/types/formMode"
+import { EmailInputProps } from "@/app/types/formComponent"
 import { validateEmail } from "@/app/utils/emailValidation"
 
-interface EmailInputProps {
-    text: string
-    label?: string
-    placeholder?: string
-    formMode: FormMode
-    required?: boolean
-    // error?: boolean
-    // errorMessage?: string
-}
-
 const EmailInput = (props: EmailInputProps) => {
-    const { text, label, placeholder, formMode, required } = props
+    const { text, ariaLabel, placeholder, formMode, required } = props
     const [email, setEmail] = useState('')
     const [emailLabel, setEmailLabel] = useState(text)
     const [emailPlaceholder, setEmailPlaceholder] = useState(placeholder)
@@ -36,7 +27,8 @@ const EmailInput = (props: EmailInputProps) => {
                         <input name='email-label'
                             id="email-label"
                             className='title-text w-full'
-                            onChange={(e) => setEmailLabel(e.target.value)}    
+                            value={emailLabel}
+                            onChange={(e) => setEmailLabel(e.target.value)}
                         />
                     </label>
                     <label htmlFor='email-placeholder' className="w-full">
@@ -44,7 +36,7 @@ const EmailInput = (props: EmailInputProps) => {
                             type="text"
                             id="email-placeholder"
                             name="email-placeholder"
-                            aria-label={label}
+                            aria-label={ariaLabel}
                             className={`w-full px-4 py-2 border rounded-md`}
                             value={emailPlaceholder}
                             onChange={(e) => setEmailPlaceholder(e.target.value)}
@@ -67,7 +59,7 @@ const EmailInput = (props: EmailInputProps) => {
                         id="email-preview"
                         type="email"
                         name="email"
-                        aria-label={label}
+                        aria-label={ariaLabel}
                         className={`w-full px-4 py-2 border rounded-md ${!emailValid ? 'border-red-500' : ''}`}
                         value={email}
                         onChange={handleChange}
