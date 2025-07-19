@@ -4,6 +4,7 @@ import ShortAnswerInput from "@/app/formComponents/ShortAnswerInput"
 import { renderComponent } from "@/app/utils/renderComponent" 
 import { useFormStore } from '@/app/store/formStore'
 import { FormComponent } from '@/app/types/formComponent'
+import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
 
 const EditCanvas = () => {
   const formComponents = useFormStore(state => state.formComponents)
@@ -12,6 +13,7 @@ const EditCanvas = () => {
   const changeFormOrder = useFormStore(state => state.changeFormOrder)
   const removeFormComponent = useFormStore(state => state.removeFormComponent)
   const selectComponent = useFormStore(state => state.selectComponent)
+  const addFormComponentAtPosition = useFormStore(state => state.addFormComponentAtPosition)
 
   const [highlightedDropRow, setHighlightedDropRow] = useState<number | null>(null)
   const rowRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -81,16 +83,36 @@ const EditCanvas = () => {
   const onCanvasDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const dropIndex = getDropIndexFromY(e.clientY)
+    console.log(e)
     setHighlightedDropRow(null)
-    if (selectedComponent && dropIndex !== null) {
-      // Find the target component for the drop index
-      // If dropping at the end, use the last component
-      let targetComponent = formComponents[dropIndex] || formComponents[formComponents.length - 1]
-      if (dropIndex === formComponents.length) {
-        // If dropping at the end, create a dummy target with order = length
-        targetComponent = { ...selectedComponent, order: formComponents.length }
+    
+    if (dropIndex !== null) {
+      try {
+        // Try to parse the drag data to see if it's a new component
+        const dragData = e.dataTransfer.getData('application/json')
+        if (dragData) {
+          const parsedData = JSON.parse(dragData)
+          if (parsedData.type === 'newComponent' && parsedData.componentName) {
+            const componentName = parsedData.componentName as keyof typeof initialFieldAttributes
+            addFormComponentAtPosition(componentName, dropIndex)
+            return
+          }
+        }
+      } catch (error) {
+        console.log('Not a new component drop, checking for existing component reorder')
       }
-      changeFormOrder(selectedComponent, targetComponent)
+      
+      // Handle existing component reordering
+      if (selectedComponent && dropIndex !== null) {
+        // Find the target component for the drop index
+        // If dropping at the end, use the last component
+        let targetComponent = formComponents[dropIndex] || formComponents[formComponents.length - 1]
+        if (dropIndex === formComponents.length) {
+          // If dropping at the end, create a dummy target with order = length
+          targetComponent = { ...selectedComponent, order: formComponents.length }
+        }
+        changeFormOrder(selectedComponent, targetComponent)
+      }
     }
   }
 

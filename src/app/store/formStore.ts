@@ -11,6 +11,7 @@ interface FormStore {
     selectedComponent: FormComponent | null,
     changeFormMode: (mode: FormMode) => void
     addFormComponent: (name: keyof typeof initialFieldAttributes, order: number) => void
+    addFormComponentAtPosition: (name: keyof typeof initialFieldAttributes, position: number) => void
     changeFormOrder: (draggedComponent: FormComponent, dropTargetComponent: FormComponent) => void
     removeFormComponent: (form: FormComponent) => void
     selectComponent: (component: FormComponent | null) => void
@@ -35,6 +36,25 @@ export const useFormStore = create<FormStore>()(
 
             const newFormComponents = [...state.formComponents, component].sort((a, b) => a.order - b.order)
             return {formComponents : newFormComponents}
+        }),
+        addFormComponentAtPosition: (name, position) => set((state) => {
+            const component = {
+                id: uuidv4(),
+                order: position,
+                componentName: name,
+                ...initialFieldAttributes[name]
+            }
+
+            // Insert the component at the specified position
+            const newFormComponents = [...state.formComponents]
+            newFormComponents.splice(position, 0, component)
+            
+            // Update the order of all components after the insertion point
+            for (let i = position + 1; i < newFormComponents.length; i++) {
+                newFormComponents[i].order = i
+            }
+            
+            return { formComponents: newFormComponents }
         }),
         changeFormOrder: (draggedComponent, dropTargetComponent) => set(state => {
             if (!draggedComponent) return state
