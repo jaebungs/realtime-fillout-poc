@@ -10,6 +10,7 @@ export interface FormComponent {
 }
 
 export interface EmailInputProps {
+    id: string,
     text: string
     ariaLabel?: string
     placeholder?: string
@@ -20,6 +21,7 @@ export interface EmailInputProps {
 }
 
 export interface ShortAnswerInputProps {
+    id: string,
     text: string
     ariaLabel?: string
     placeholder?: string

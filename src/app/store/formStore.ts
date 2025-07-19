@@ -16,6 +16,7 @@ interface FormStore {
     removeFormComponent: (form: FormComponent) => void
     selectComponent: (component: FormComponent | null) => void
     clearSelectedComponent: () => void
+    updateComponentProperty: (componentId: string, property: keyof FormComponent, value: any) => void
 }
 
 export const useFormStore = create<FormStore>()(
@@ -91,7 +92,12 @@ export const useFormStore = create<FormStore>()(
         }),
         
         clearFormComponents: () => set({ formComponents: [] }),
-        clearSelectedComponent: () => set({ selectedComponent: null })
+        clearSelectedComponent: () => set({ selectedComponent: null }),
+        updateComponentProperty: (componentId, property, value) => set(state => ({
+            formComponents: state.formComponents.map(component =>
+                component.id === componentId ? { ...component, [property]: value } : component
+            )
+        }))
     }),
     {
       name: 'form-store',
