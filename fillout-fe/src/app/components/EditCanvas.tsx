@@ -6,8 +6,12 @@ import { useFormStore } from '@/app/store/formStore'
 import { FormComponent } from '@/app/types/formComponent'
 import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
 
-const EditCanvas = () => {
-  const formComponents = useFormStore(state => state.formComponents)
+interface EditCanvasProps {
+  formComponents: FormComponent[]
+}
+
+const EditCanvas = ({ formComponents }: EditCanvasProps) => {
+  // const formComponents = useFormStore(state => state.formComponents)
   const formMode = useFormStore(state => state.formMode)
   const selectedComponent = useFormStore(state => state.selectedComponent)
   const changeFormOrder = useFormStore(state => state.changeFormOrder)

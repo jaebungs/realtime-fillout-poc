@@ -36,6 +36,13 @@ export const useFormStore = create<FormStore>()(
             }
 
             const newFormComponents = [...state.formComponents, component].sort((a, b) => a.order - b.order)
+            
+            // WS migration
+            ws.send(JSON.stringify({
+                type: 'addFormComponent',
+                componentName: name,
+                order: 'last'
+            }))
             return {formComponents : newFormComponents}
         }),
         addFormComponentAtPosition: (name, position) => set((state) => {
