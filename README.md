@@ -21,4 +21,12 @@ Built with NextJS, Typescript, Tailwind
 7. Add real-time collaboration
     - User presnece indicator
     - Conflict resolution strategy
+    - move formComponent state and related CRUD logic to the server
 8. Add preview/publish feature
+
+## Backend
+#### Centralized State on the WebSocket Server
+Single source of truth: Prevents state divergence between clients.
+Real-time collaboration: All users see updates instantly and consistently.
+Conflict resolution: Easier to manage concurrent edits (server can resolve or reject conflicts).
+Persistence: You can save the state to a database from the server
