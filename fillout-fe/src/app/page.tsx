@@ -1,6 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useFormStore } from '@/app/store/formStore'
+import ws from '@/app/utils/websocket'
 import EditorNav from '@/app/components/EditorNav'
 import ComponentPanel from '@/app/components/ComponentPanel'
 import EditCanvas from '@/app/components/EditCanvas'
@@ -8,6 +9,20 @@ import Preview from '@/app/components/Preview'
 
 export default function Home() {
   const formMode = useFormStore(state => state.formMode)
+
+  useEffect(() => {
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server')
+    };
+    
+    ws.onclose = () => {
+      console.log('WebSocket connection closed')
+    }
+
+    return () => {
+      ws.close()
+    }
+  }, [])
 
   return (
     <div className="">
