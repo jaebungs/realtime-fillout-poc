@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { FormMode } from '@/app/types/formMode'
 import { FormComponent } from '@/app/types/formComponent'
+import ws from '@/app/utils/websocket'
 import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -62,6 +63,12 @@ export const useFormStore = create<FormStore>()(
                 newFormComponents[i].order = i
             }
             
+            // WS migration
+            ws.send(JSON.stringify({
+                type: 'addFormComponentAtPosition',
+                componentName: name,
+                order: position
+            }))
             return { formComponents: newFormComponents }
         }),
         changeFormOrder: (draggedComponent, dropTargetComponent) => set(state => {
