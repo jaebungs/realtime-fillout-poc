@@ -1,14 +1,18 @@
-const WebSocket = require('ws')
-const { v4: uuidv4 } = require('uuid')
+import WebSocket, { WebSocketServer } from 'ws'
+import { IncomingMessage } from 'http'
+import { v4 as uuidv4 } from 'uuid'
+import initialFieldAttributes from './utils/initialFieldAttributes'
+import { FormComponent } from './types/componentTypes'
 
-const port = 6060;
+const port = 6060
 
-const wss = new WebSocket.Server({ port })
+const wss = new WebSocketServer({ port })
 
 const connectedClients = new Set()
+const formComponents: FormComponent[] = []
 
 // Handle new connections
-wss.on('connection', (ws, req) => {
+wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
     const clientId = uuidv4()
     connectedClients.add(clientId)
     console.log(`New client connected from ${clientId}`)
@@ -18,28 +22,42 @@ wss.on('connection', (ws, req) => {
     ws.send(JSON.stringify({
       type: 'welcome',
       message: 'Connected to WebSocket server',
+      formComponents,
       timestamp: new Date().toISOString()
-    }));
+    }))
   
     // Handle incoming messages from client
-    ws.on('message', (data) => {
+    ws.on('message', (data: WebSocket.RawData) => {
       try {
         const message = JSON.parse(data.toString())
         console.log('Received:', message)
-  
+        const order = formComponents.length <= 0 ? 0 : formComponents.length
+        
+        if (message.type === 'addFormComponent') {
+          const initialAttributes = initialFieldAttributes[message.componentName]
+          const component: FormComponent = {
+            id: uuidv4(),
+            order: order,
+            componentName: message.componentName, // <-- add this line
+            ...initialAttributes
+          }
+          formComponents.push(component)
+        }
+        console.log('formComponents', formComponents)
         // Echo the message back to the client
-        ws.send(JSON.stringify({
-          type: 'echo',
-          originalMessage: message,
-          timestamp: new Date().toISOString()
-        }));
+        // ws.send(JSON.stringify({
+        //   type: 'echo',
+        //   originalMessage: message,
+        //   timestamp: new Date().toISOString()
+        // }));
   
         // Broadcast to all other connected clients (optional)
         wss.clients.forEach((client) => {
-          if (client !== ws && client.readyState === WebSocket.OPEN) {
+          if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify({
               type: 'broadcast',
               message: message,
+              formComponents,
               timestamp: new Date().toISOString()
             }));
           }
