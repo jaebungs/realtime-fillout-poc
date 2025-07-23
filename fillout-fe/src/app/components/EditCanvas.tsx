@@ -111,10 +111,8 @@ const EditCanvas = ({ formComponents, wsInstance }: EditCanvasProps) => {
         // Find the target component for the drop index
         // If dropping at the end, use the last component
         let targetComponent = formComponents[dropIndex] || formComponents[formComponents.length - 1]
-        if (dropIndex === formComponents.length) {
-          // If dropping at the end, create a dummy target with order = length
-          targetComponent = { ...selectedComponent, order: formComponents.length }
-        }
+        if (selectedComponent.order === targetComponent.order) return
+
         changeFormOrder(selectedComponent, targetComponent, wsInstance)
       }
     }

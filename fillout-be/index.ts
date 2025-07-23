@@ -53,7 +53,7 @@ function changeFormOrder(draggedComponent: FormComponent, dropTargetComponent: F
   const start = Math.min(draggedIndex, dropIndex)
   const end = Math.max(draggedIndex, dropIndex)
 
-  for (let i = start; i < end; i++) {
+  for (let i = start; i <= end; i++) {
     newFormComponents[i].order = i;
   }
 
