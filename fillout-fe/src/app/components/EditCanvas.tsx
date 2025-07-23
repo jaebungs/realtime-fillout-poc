@@ -8,9 +8,10 @@ import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
 
 interface EditCanvasProps {
   formComponents: FormComponent[]
+  wsInstance: WebSocket
 }
 
-const EditCanvas = ({ formComponents }: EditCanvasProps) => {
+const EditCanvas = ({ formComponents, wsInstance }: EditCanvasProps) => {
   // const formComponents = useFormStore(state => state.formComponents)
   const formMode = useFormStore(state => state.formMode)
   const selectedComponent = useFormStore(state => state.selectedComponent)
@@ -47,20 +48,19 @@ const EditCanvas = ({ formComponents }: EditCanvasProps) => {
 
   const handleRemoveComponent = (form: FormComponent, e: React.MouseEvent) => {
     e.stopPropagation()
-    removeFormComponent(form)
+    removeFormComponent(form, wsInstance)
   }
 
   // Helper to get the drop index based on mouse Y
   const getDropIndexFromY = (clientY: number) => {
     if (!canvasRef.current) return null
-    const canvasRect = canvasRef.current.getBoundingClientRect()
     let minDistance = Infinity
     let dropIndex = 0
     for (let i = 0; i <= formComponents.length; i++) {
       // For each DROPABOVEROW, get its Y position
-      const dropRow = document.getElementById(`DROPABOVEROW-${i}`)
-      if (dropRow) {
-        const rect = dropRow.getBoundingClientRect()
+      const dropRows = document.getElementById(`DROPABOVEROW-${i}`)
+      if (dropRows) {
+        const rect = dropRows.getBoundingClientRect()
         const centerY = rect.top + rect.height / 2
         const distance = Math.abs(clientY - centerY)
         if (distance < minDistance) {
@@ -98,7 +98,7 @@ const EditCanvas = ({ formComponents }: EditCanvasProps) => {
           const parsedData = JSON.parse(dragData)
           if (parsedData.type === 'newComponent' && parsedData.componentName) {
             const componentName = parsedData.componentName as keyof typeof initialFieldAttributes
-            addFormComponentAtPosition(componentName, dropIndex)
+            addFormComponentAtPosition(componentName, dropIndex, wsInstance)
             return
           }
         }
@@ -115,7 +115,7 @@ const EditCanvas = ({ formComponents }: EditCanvasProps) => {
           // If dropping at the end, create a dummy target with order = length
           targetComponent = { ...selectedComponent, order: formComponents.length }
         }
-        changeFormOrder(selectedComponent, targetComponent)
+        changeFormOrder(selectedComponent, targetComponent, wsInstance)
       }
     }
   }

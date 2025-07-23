@@ -2,8 +2,11 @@
 import { useFormStore } from '@/app/store/formStore'
 import { FormComponent } from '@/app/types/formComponent'
 import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
+interface ComponentPanelProps {
+  wsInstance: WebSocket
+}
 
-const ComponentPanel = () => {
+const ComponentPanel = ({ wsInstance } : ComponentPanelProps) => {
   const formComponents = useFormStore(state => state.formComponents)
   const addFormComponent = useFormStore(state => state.addFormComponent)
 
@@ -16,7 +19,7 @@ const ComponentPanel = () => {
   }
 
   const onFieldComponentClick = (name: keyof typeof initialFieldAttributes) => {
-    addFormComponent(name, formComponents.length)
+    addFormComponent(name, formComponents.length, wsInstance)
   }
 
   return (
