@@ -40,6 +40,26 @@ function addFormComponentAtPosition(componentName: string, order: number) {
   formComponents = newFormComponents
 }
 
+function changeFormOrder(draggedComponent: FormComponent, dropTargetComponent: FormComponent) {
+  const draggedIndex = draggedComponent.order
+  const dropIndex = dropTargetComponent.order
+  if (draggedIndex === -1 || dropIndex === -1) return
+
+  const newFormComponents = [...formComponents]
+  const [moved] = newFormComponents.splice(draggedIndex, 1)
+  newFormComponents.splice(dropIndex, 0, moved)
+  
+  // update order only for the affected form components
+  const start = Math.min(draggedIndex, dropIndex)
+  const end = Math.max(draggedIndex, dropIndex)
+
+  for (let i = start; i < end; i++) {
+    newFormComponents[i].order = i;
+  }
+
+  formComponents = newFormComponents
+}
+
 function broadcastFormComponents(message: any) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
@@ -82,6 +102,8 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
         addFormComponent(message.componentName)
       } else if (message.type === 'addFormComponentAtPosition') {
         addFormComponentAtPosition(message.componentName, message.order)
+      } else if (message.type === 'changeFormOrder') {
+        changeFormOrder(message.draggedComponent, message.dropTargetComponent)
       }
       console.log('formComponents', formComponents)
 

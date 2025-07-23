@@ -88,6 +88,13 @@ export const useFormStore = create<FormStore>()(
             if (replacedComponent) {
                 replacedComponent.order = dragComponentPosition
             }
+            
+            // WS migration
+            ws.send(JSON.stringify({
+                type: 'changeFormOrder',
+                draggedComponent,
+                dropTargetComponent
+            }))
             return { formComponents: newComponents }
         }),
         removeFormComponent: (form) => set((state) => {
