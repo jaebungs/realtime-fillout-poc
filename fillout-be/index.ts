@@ -48,13 +48,22 @@ function changeFormOrder(draggedComponent: FormComponent, dropTargetComponent: F
   const newFormComponents = [...formComponents]
   const [moved] = newFormComponents.splice(draggedIndex, 1)
   newFormComponents.splice(dropIndex, 0, moved)
-  
+
   // update order only for the affected form components
   const start = Math.min(draggedIndex, dropIndex)
   const end = Math.max(draggedIndex, dropIndex)
 
   for (let i = start; i < end; i++) {
     newFormComponents[i].order = i;
+  }
+
+  formComponents = newFormComponents
+}
+
+function removeFormComponent(targetComponent: FormComponent) {
+  const newFormComponents = formComponents.filter(form => form.id !== targetComponent.id)
+  for (let i = targetComponent.order; i < newFormComponents.length; i++) {
+    newFormComponents[i].order = i
   }
 
   formComponents = newFormComponents
@@ -104,6 +113,8 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
         addFormComponentAtPosition(message.componentName, message.order)
       } else if (message.type === 'changeFormOrder') {
         changeFormOrder(message.draggedComponent, message.dropTargetComponent)
+      } else if (message.type === 'removeFormComponent') {
+        removeFormComponent(message.targetComponent)
       }
       console.log('formComponents', formComponents)
 
