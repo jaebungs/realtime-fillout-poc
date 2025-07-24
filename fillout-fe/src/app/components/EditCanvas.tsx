@@ -8,10 +8,9 @@ import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
 
 interface EditCanvasProps {
   formComponents: FormComponent[]
-  wsInstance: WebSocket
 }
 
-const EditCanvas = ({ formComponents, wsInstance }: EditCanvasProps) => {
+const EditCanvas = ({ formComponents }: EditCanvasProps) => {
   // const formComponents = useFormStore(state => state.formComponents)
   const formMode = useFormStore(state => state.formMode)
   const selectedComponent = useFormStore(state => state.selectedComponent)
@@ -48,7 +47,7 @@ const EditCanvas = ({ formComponents, wsInstance }: EditCanvasProps) => {
 
   const handleRemoveComponent = (form: FormComponent, e: React.MouseEvent) => {
     e.stopPropagation()
-    removeFormComponent(form, wsInstance)
+    removeFormComponent(form)
   }
 
   // Helper to get the drop index based on mouse Y
@@ -98,7 +97,7 @@ const EditCanvas = ({ formComponents, wsInstance }: EditCanvasProps) => {
           const parsedData = JSON.parse(dragData)
           if (parsedData.type === 'newComponent' && parsedData.componentName) {
             const componentName = parsedData.componentName as keyof typeof initialFieldAttributes
-            addFormComponentAtPosition(componentName, dropIndex, wsInstance)
+            addFormComponentAtPosition(componentName, dropIndex)
             return
           }
         }
@@ -113,7 +112,7 @@ const EditCanvas = ({ formComponents, wsInstance }: EditCanvasProps) => {
         let targetComponent = formComponents[dropIndex] || formComponents[formComponents.length - 1]
         if (selectedComponent.order === targetComponent.order) return
 
-        changeFormOrder(selectedComponent, targetComponent, wsInstance)
+        changeFormOrder(selectedComponent, targetComponent)
       }
     }
   }

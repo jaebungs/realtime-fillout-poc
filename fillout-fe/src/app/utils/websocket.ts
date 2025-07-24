@@ -1,3 +1,6 @@
+export let wsInstance: WebSocket
+
 export function createWebSocket() {
-  return new WebSocket('ws://localhost:6060')
+    wsInstance = new WebSocket('ws://localhost:6060')
+  return wsInstance
 }
