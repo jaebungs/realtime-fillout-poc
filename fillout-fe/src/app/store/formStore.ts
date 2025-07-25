@@ -127,18 +127,16 @@ export const useFormStore = create<FormStore>()(
         
         clearFormComponents: () => set({ formComponents: [] }),
         clearSelectedComponent: () => set({ selectedComponent: null }),
-        updateComponentProperty: (componentId, property, value) => set(state => {
-            const newFormComponents = state.formComponents.map(component =>
-                component.id === componentId ? { ...component, [property]: value } : component
-            )
+        updateComponentProperty: (componentId, property, value) => {
             wsInstance.send(JSON.stringify({
                 type: 'updateComponentProperty',
                 componentId, 
                 property,
                 value
             }))
-            return { formComponents: newFormComponents }
-        })
+            // Do not update local state here; wait for backend broadcast
+            return {}
+        }
     }),
     {
       name: 'form-store',
