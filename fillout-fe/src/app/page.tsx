@@ -8,6 +8,7 @@ import EditCanvas from '@/app/components/EditCanvas'
 import Preview from '@/app/components/Preview'
 
 export default function Home() {
+  const updateFormComponents = useFormStore(state => state.updateFormComponents)
   const formMode = useFormStore(state => state.formMode)
   const [formComponents, setFormComponents] = useState([])
   const [isLoading, setLoading] = useState(true)
@@ -15,14 +16,16 @@ export default function Home() {
   useEffect(() => {
     createWebSocket()
     if (!wsInstance) return
-    
+
     wsInstance.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data)
       if (data.type === 'welcome' && data.formComponents) {
         setFormComponents(data.formComponents)
+        updateFormComponents(data.formComponents)
       }
       if (data.type === 'broadcast' && data.formComponents) {
         setFormComponents(data.formComponents)
+        updateFormComponents(data.formComponents)
       }
     }
     wsInstance.onclose = () => {

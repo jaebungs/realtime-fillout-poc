@@ -69,6 +69,13 @@ function removeFormComponent(targetComponent: FormComponent) {
   formComponents = newFormComponents
 }
 
+function updateComponentProperty(componentId: string, property : any, value : any) {
+  const newFormComponents = formComponents.map(component =>
+    component.id === componentId ? { ...component, [property]: value } : component
+  )
+  formComponents = newFormComponents
+}
+
 function broadcastFormComponents(message: any) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
@@ -115,6 +122,8 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
         changeFormOrder(message.draggedComponent, message.dropTargetComponent)
       } else if (message.type === 'removeFormComponent') {
         removeFormComponent(message.targetComponent)
+      } else if (message.type === 'updateComponentProperty') {
+        updateComponentProperty(message.componentId, message.property, message.value)
       }
       console.log('formComponents', formComponents)
 

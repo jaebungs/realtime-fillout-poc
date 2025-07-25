@@ -10,6 +10,7 @@ interface FormStore {
     formComponents: FormComponent[]
     formMode: FormMode,
     selectedComponent: FormComponent | null,
+    updateFormComponents: (newFormComponents : FormComponent[]) => void
     changeFormMode: (mode: FormMode) => void
     addFormComponent: (name: keyof typeof initialFieldAttributes, order: number) => void
     addFormComponentAtPosition: (name: keyof typeof initialFieldAttributes, position: number) => void
@@ -30,6 +31,7 @@ export const useFormStore = create<FormStore>()(
         formComponents: [],
         formMode: 'edit',
         selectedComponent: null,
+        updateFormComponents: (newFormComponents) => set({ formComponents: newFormComponents}),
         changeFormMode: (mode) => set({ formMode: mode }),
         selectComponent: (component) => set({ selectedComponent: component }),
         addFormComponent: (name, order) => set((state) => {
@@ -125,11 +127,18 @@ export const useFormStore = create<FormStore>()(
         
         clearFormComponents: () => set({ formComponents: [] }),
         clearSelectedComponent: () => set({ selectedComponent: null }),
-        updateComponentProperty: (componentId, property, value) => set(state => ({
-            formComponents: state.formComponents.map(component =>
+        updateComponentProperty: (componentId, property, value) => set(state => {
+            const newFormComponents = state.formComponents.map(component =>
                 component.id === componentId ? { ...component, [property]: value } : component
             )
-        }))
+            wsInstance.send(JSON.stringify({
+                type: 'updateComponentProperty',
+                componentId, 
+                property,
+                value
+            }))
+            return { formComponents: newFormComponents }
+        })
     }),
     {
       name: 'form-store',

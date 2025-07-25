@@ -14,7 +14,6 @@ const EmailInput = (componentProp: EmailInputProps) => {
     const updateComponentProperty = useFormStore(state => state.updateComponentProperty)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value)
         setEmail(e.target.value)
         const { isValid, errorMessage } = validateEmail(e.target.value)
         setEmailValid(isValid)
