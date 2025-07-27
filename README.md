@@ -30,3 +30,24 @@ Single source of truth: Prevents state divergence between clients.
 Real-time collaboration: All users see updates instantly and consistently.
 Conflict resolution: Easier to manage concurrent edits (server can resolve or reject conflicts).
 Persistence: You can save the state to a database from the server
+
+### Conflict handling
+Let's use Operational Transform (OT). Here are the reasons:
+1. Undo/Redo - we need to track a history of operations
+2. Proven method and can handle concurrent edits gracefully
+3. Easy to extend - easy to add more operations(e.g adding more editable property or function)
+
+Alternative option is Conflict Free Replicated Data Types (CRDTs),
+however, it's too complex for this project (smaller user counts and simple data)
+
+Each operation handles each tasks and we can make transformation logics for each tasks.
+Keep in mind that there is no true 'simultaneous', operations arrive at the server in some order. 
+
+## How it works
+1. Client maintains operation queue
+2. Client make change -> optimistic updates -> send to server
+3. Server computes -> broadcast to clients
+4. Client reconciles with server resposne
+
+I initially removed optimistic updates, but decided to add again.
+It's mainly to give responsive UI updates fast, instead of waiting for the server response
