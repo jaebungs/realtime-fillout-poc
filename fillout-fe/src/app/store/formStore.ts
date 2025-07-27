@@ -7,6 +7,7 @@ import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
 import { v4 as uuidv4 } from 'uuid'
 
 interface FormStore {
+    clientId: string
     formComponents: FormComponent[]
     formMode: FormMode,
     selectedComponent: FormComponent | null,
@@ -19,6 +20,7 @@ interface FormStore {
     selectComponent: (component: FormComponent | null) => void
     clearSelectedComponent: () => void
     updateComponentProperty: (componentId: string, property: keyof FormComponent, value: any) => void
+    setClientId: (clientId: string) => void
 }
 
 /**
@@ -28,9 +30,11 @@ interface FormStore {
 export const useFormStore = create<FormStore>()(
   devtools(
     (set, get) => ({
+        clientId: '',
         formComponents: [],
         formMode: 'edit',
         selectedComponent: null,
+        setClientId: (clientId: string) => set({ clientId }),
         updateFormComponents: (newFormComponents) => set({ formComponents: newFormComponents}),
         changeFormMode: (mode) => set({ formMode: mode }),
         selectComponent: (component) => set({ selectedComponent: component }),

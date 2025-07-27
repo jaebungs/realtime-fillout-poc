@@ -8,6 +8,7 @@ import EditCanvas from '@/app/components/EditCanvas'
 import Preview from '@/app/components/Preview'
 
 export default function Home() {
+  const setClientId = useFormStore(state => state.setClientId)
   const updateFormComponents = useFormStore(state => state.updateFormComponents)
   const formMode = useFormStore(state => state.formMode)
   const [formComponents, setFormComponents] = useState([])
@@ -20,6 +21,7 @@ export default function Home() {
     wsInstance.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data)
       if (data.type === 'welcome' && data.formComponents) {
+        setClientId(data.clientId)
         setFormComponents(data.formComponents)
         updateFormComponents(data.formComponents)
       }
