@@ -1,5 +1,6 @@
 export interface FormComponent {
     id: string,
+    userId: string,
     order: number,
     componentName: string,
     text: string

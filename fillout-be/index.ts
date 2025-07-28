@@ -11,11 +11,12 @@ const wss = new WebSocketServer({ port })
 const connectedClients = new Set()
 let formComponents: FormComponent[] = []
 
-function addFormComponent(componentName: string) {
+function addFormComponent(componentName: string, userId: string) {
   const order = formComponents.length
   const initialAttributes = initialFieldAttributes[componentName]
   const component: FormComponent = {
     id: uuidv4(),
+    userId,
     order,
     componentName,
     ...initialAttributes,
@@ -23,10 +24,11 @@ function addFormComponent(componentName: string) {
   formComponents.push(component)
 }
 
-function addFormComponentAtPosition(componentName: string, order: number) {
+function addFormComponentAtPosition(componentName: string, order: number, userId: string) {
   const initialAttributes = initialFieldAttributes[componentName]
   const component: FormComponent = {
     id: uuidv4(),
+    userId,
     order,
     componentName,
     ...initialAttributes,
@@ -40,7 +42,7 @@ function addFormComponentAtPosition(componentName: string, order: number) {
   formComponents = newFormComponents
 }
 
-function changeFormOrder(draggedComponent: FormComponent, dropTargetComponent: FormComponent) {
+function changeFormOrder(draggedComponent: FormComponent, dropTargetComponent: FormComponent, userId: string) {
   const draggedIndex = draggedComponent.order
   const dropIndex = dropTargetComponent.order
   if (draggedIndex === -1 || dropIndex === -1) return
@@ -60,7 +62,7 @@ function changeFormOrder(draggedComponent: FormComponent, dropTargetComponent: F
   formComponents = newFormComponents
 }
 
-function removeFormComponent(targetComponent: FormComponent) {
+function removeFormComponent(targetComponent: FormComponent, userId: string) {
   const newFormComponents = formComponents.filter(form => form.id !== targetComponent.id)
   for (let i = targetComponent.order; i < newFormComponents.length; i++) {
     newFormComponents[i].order = i
@@ -69,7 +71,7 @@ function removeFormComponent(targetComponent: FormComponent) {
   formComponents = newFormComponents
 }
 
-function updateComponentProperty(componentId: string, property : any, value : any) {
+function updateComponentProperty(componentId: string, property : any, value : any, userId: string) {
   const newFormComponents = formComponents.map(component =>
     component.id === componentId ? { ...component, [property]: value } : component
   )
@@ -93,9 +95,9 @@ function broadcastFormComponents(message: any) {
 
 // Handle new connections
 wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
-  const clientId = uuidv4();
-  connectedClients.add(clientId);
-  console.log(`New client connected from ${clientId}`);
+  const userId = uuidv4();
+  connectedClients.add(userId);
+  console.log(`New client connected from ${userId}`);
   console.log('All connected client UUIDs:', Array.from(connectedClients));
 
   // Send welcome message to new client - init
@@ -104,6 +106,7 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
       type: 'welcome',
       message: 'Connected to WebSocket server',
       formComponents,
+      userId,
       timestamp: new Date().toISOString(),
     })
   )
@@ -115,15 +118,15 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
       console.log('Received:', message);
 
       if (message.type === 'addFormComponent') {
-        addFormComponent(message.componentName)
+        addFormComponent(message.componentName, message.userId)
       } else if (message.type === 'addFormComponentAtPosition') {
-        addFormComponentAtPosition(message.componentName, message.order)
+        addFormComponentAtPosition(message.componentName, message.order, message.userId)
       } else if (message.type === 'changeFormOrder') {
-        changeFormOrder(message.draggedComponent, message.dropTargetComponent)
+        changeFormOrder(message.draggedComponent, message.dropTargetComponent, message.userId)
       } else if (message.type === 'removeFormComponent') {
-        removeFormComponent(message.targetComponent)
+        removeFormComponent(message.targetComponent, message.userId)
       } else if (message.type === 'updateComponentProperty') {
-        updateComponentProperty(message.componentId, message.property, message.value)
+        updateComponentProperty(message.componentId, message.property, message.value, message.userId)
       }
       console.log('formComponents', formComponents)
 
@@ -143,7 +146,7 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 
   // Handle client disconnect
   ws.on('close', (code, reason) => {
-    connectedClients.delete(clientId);
+    connectedClients.delete(userId);
     console.log(`Client disconnected. Code: ${code}, Reason: ${reason}`)
     console.log('All connected client UUIDs:', Array.from(connectedClients))
   });

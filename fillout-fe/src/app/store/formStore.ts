@@ -7,7 +7,7 @@ import initialFieldAttributes from '@/app/utils/initialFieldAttributes'
 import { v4 as uuidv4 } from 'uuid'
 
 interface FormStore {
-    clientId: string
+    userId: string
     formComponents: FormComponent[]
     formMode: FormMode,
     selectedComponent: FormComponent | null,
@@ -20,7 +20,7 @@ interface FormStore {
     selectComponent: (component: FormComponent | null) => void
     clearSelectedComponent: () => void
     updateComponentProperty: (componentId: string, property: keyof FormComponent, value: any) => void
-    setClientId: (clientId: string) => void
+    setClientId: (userId: string) => void
 }
 
 /**
@@ -30,11 +30,11 @@ interface FormStore {
 export const useFormStore = create<FormStore>()(
   devtools(
     (set, get) => ({
-        clientId: '',
+        userId: '',
         formComponents: [],
         formMode: 'edit',
         selectedComponent: null,
-        setClientId: (clientId: string) => set({ clientId }),
+        setClientId: (userId: string) => set({ userId }),
         updateFormComponents: (newFormComponents) => set({ formComponents: newFormComponents}),
         changeFormMode: (mode) => set({ formMode: mode }),
         selectComponent: (component) => set({ selectedComponent: component }),
@@ -50,6 +50,7 @@ export const useFormStore = create<FormStore>()(
             
             wsInstance.send(JSON.stringify({
                 type: 'addFormComponent',
+                userId: state.userId,
                 componentName: name,
                 order: 'last'
             }))
@@ -72,9 +73,9 @@ export const useFormStore = create<FormStore>()(
             // for (let i = position + 1; i < newFormComponents.length; i++) {
             //     newFormComponents[i].order = i
             // }
-            
             wsInstance.send(JSON.stringify({
                 type: 'addFormComponentAtPosition',
+                userId: state.userId,
                 componentName: name,
                 order: position
             }))
@@ -101,6 +102,7 @@ export const useFormStore = create<FormStore>()(
 
             wsInstance.send(JSON.stringify({
                 type: 'changeFormOrder',
+                userId: state.userId,
                 draggedComponent,
                 dropTargetComponent
             }))
@@ -119,6 +121,7 @@ export const useFormStore = create<FormStore>()(
             // WS migration
             wsInstance.send(JSON.stringify({
                 type: 'removeFormComponent',
+                userId: state.userId,
                 targetComponent: form
             }))
             
@@ -131,16 +134,17 @@ export const useFormStore = create<FormStore>()(
         
         clearFormComponents: () => set({ formComponents: [] }),
         clearSelectedComponent: () => set({ selectedComponent: null }),
-        updateComponentProperty: (componentId, property, value) => {
+        updateComponentProperty: (componentId, property, value) => set((state) => {
             wsInstance.send(JSON.stringify({
                 type: 'updateComponentProperty',
+                userId: state.userId,
                 componentId, 
                 property,
                 value
             }))
             // Do not update local state here; wait for backend broadcast
             return {}
-        }
+        })
     }),
     {
       name: 'form-store',
