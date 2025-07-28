@@ -8,7 +8,13 @@ export interface FormComponent {
     placeholder?: string,
     formMode?: FormMode
 }
-
+export interface PendingOperation {
+    taskId: string,
+    userId: string,
+    type: string,
+    payload: any,
+    timestamp: Date
+}
 export interface EmailInputProps {
     id: string,
     text: string
