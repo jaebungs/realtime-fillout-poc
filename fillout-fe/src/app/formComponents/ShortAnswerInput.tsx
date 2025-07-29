@@ -3,6 +3,7 @@ import { useState } from "react"
 import { FormMode } from "@/app/types/formMode"
 import { ShortAnswerInputProps } from "@/app/types/formComponent"
 import { useFormStore } from "@/app/store/formStore"
+import { useDebouncedComponentUpdate } from "@/app/utils/useDebouncePropertyUpdate"
 
 const shortAnswerInput = (props: ShortAnswerInputProps) => {
     const { id, text, ariaLabel, placeholder, formMode, required, error, errorMessage } = props
@@ -15,13 +16,12 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
         setShortAnswer(e.target.value)
     }
 
-    const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateComponentProperty(id, 'text', e.target.value)
-    }
+    const { localValue: localText, handleChange: handleLabelChange } = 
+        useDebouncedComponentUpdate(id, 'text', text)
+    
+    const { localValue: localPlaceholder, handleChange: handlePlaceholderChange } = 
+        useDebouncedComponentUpdate(id, 'placeholder', placeholder || '')
 
-    const handlePlaceholderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateComponentProperty(id, 'placeholder', e.target.value)
-    }
 
     return (
         <div className="w-full flex flex-col">
@@ -32,7 +32,7 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
                         type='text'
                         name='short-answer-label'
                         className="w-full"
-                        value={text}
+                        value={localText}
                         onChange={handleLabelChange}
                     />
                     <input
@@ -40,7 +40,7 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
                         name="short-answer-placeholder"
                         aria-label={ariaLabel}
                         className={`w-full px-4 py-2 border rounded-md`}
-                        value={placeholder}
+                        value={localPlaceholder}
                         onChange={handlePlaceholderChange}
                         placeholder={placeholder}
                     />

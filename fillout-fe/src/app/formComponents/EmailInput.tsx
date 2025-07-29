@@ -4,6 +4,7 @@ import { FormMode } from "@/app/types/formMode"
 import { EmailInputProps } from "@/app/types/formComponent"
 import { validateEmail } from "@/app/utils/emailValidation"
 import { useFormStore } from "@/app/store/formStore"
+import { useDebouncedComponentUpdate } from "@/app/utils/useDebouncePropertyUpdate"
 
 const EmailInput = (componentProp: EmailInputProps) => {
     const { id, text, ariaLabel, placeholder, formMode, required } = componentProp
@@ -11,7 +12,7 @@ const EmailInput = (componentProp: EmailInputProps) => {
     const [emailValid, setEmailValid] = useState(true)
     const [errorMessage, setErrorMessage] = useState('')
     
-    const updateComponentProperty = useFormStore(state => state.updateComponentProperty)
+    // const updateComponentProperty = useFormStore(state => state.updateComponentProperty)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value)
@@ -20,13 +21,11 @@ const EmailInput = (componentProp: EmailInputProps) => {
         setErrorMessage(errorMessage)
     }
 
-    const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateComponentProperty(id, 'text', e.target.value)
-    }
-
-    const handlePlaceholderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateComponentProperty(id, 'placeholder', e.target.value)
-    }
+    const { localValue: localText, handleChange: handleLabelChange } = 
+        useDebouncedComponentUpdate(id, 'text', text)
+    
+    const { localValue: localPlaceholder, handleChange: handlePlaceholderChange } = 
+        useDebouncedComponentUpdate(id, 'placeholder', placeholder || '')
 
     return (
         <div id={id} className="w-full flex flex-col">
@@ -36,7 +35,7 @@ const EmailInput = (componentProp: EmailInputProps) => {
                         <input name='email-label'
                             id="email-label"
                             className='title-text w-full'
-                            value={text}
+                            value={localText}
                             onChange={handleLabelChange}
                         />
                     </label>
@@ -47,7 +46,7 @@ const EmailInput = (componentProp: EmailInputProps) => {
                             name="email-placeholder"
                             aria-label={ariaLabel}
                             className={`w-full px-4 py-2 border rounded-md`}
-                            value={placeholder}
+                            value={localPlaceholder}
                             onChange={handlePlaceholderChange}
                             placeholder={placeholder}
                         />
