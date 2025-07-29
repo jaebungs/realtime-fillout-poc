@@ -25,7 +25,7 @@ export default function Home() {
         setFormComponents(data.formComponents)
         updateFormComponents(data.formComponents)
       }
-      if (data.type === 'broadcast' && data.formComponents) {
+      if (data.type === 'operationApplied' && data.formComponents) {
         setFormComponents(data.formComponents)
         updateFormComponents(data.formComponents)
       }

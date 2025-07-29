@@ -9,11 +9,11 @@ export interface FormComponent {
     formMode?: FormMode
 }
 export interface PendingOperation {
-    taskId: string,
+    id: string,
     userId: string,
     type: string,
     payload: any,
-    timestamp: Date
+    timestamp: number
 }
 export interface EmailInputProps {
     id: string,

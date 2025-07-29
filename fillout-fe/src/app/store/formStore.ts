@@ -33,6 +33,7 @@ export const useFormStore = create<FormStore>()(
     (set, get) => ({
         userId: '',
         formComponents: [],
+        pendingOperation: [],
         formMode: 'edit',
         selectedComponent: null,
         setUserId: (userId: string) => set({ userId }),
@@ -48,7 +49,15 @@ export const useFormStore = create<FormStore>()(
             }
 
             const newFormComponents = [...state.formComponents, component].sort((a, b) => a.order - b.order)
-            
+            // add pending operation
+            state.pendingOperation.push({
+                id: component.id,
+                userId: state.userId,
+                payload: component,
+                type: 'addFormComponent',
+                timestamp: Date.now()
+            })
+
             wsInstance.send(JSON.stringify({
                 type: 'addFormComponent',
                 userId: state.userId,
@@ -74,6 +83,16 @@ export const useFormStore = create<FormStore>()(
             for (let i = position + 1; i < newFormComponents.length; i++) {
                 newFormComponents[i].order = i
             }
+
+            // add pending operation
+            state.pendingOperation.push({
+                id: component.id,
+                userId: state.userId,
+                payload: component,
+                type: 'addFormComponentAtPosition',
+                timestamp: Date.now()
+            })
+
             wsInstance.send(JSON.stringify({
                 type: 'addFormComponentAtPosition',
                 userId: state.userId,
@@ -85,32 +104,46 @@ export const useFormStore = create<FormStore>()(
         }),
         changeFormOrder: (draggedComponent, dropTargetComponent) => set(state => {
             if (!draggedComponent) return state
-            console.log(draggedComponent.order, dropTargetComponent.order)
             if (draggedComponent.order === dropTargetComponent.order) return state
 
-            const dragComponentPosition = draggedComponent.order
-            const targetPosition = dropTargetComponent.order
-            // move the dragging component to the new position
-            const filteredComponents = state.formComponents.filter(form => form.id !== draggedComponent.id)
-            const newComponents = [...filteredComponents]
-            newComponents.splice(targetPosition, 0, { ...draggedComponent, order: targetPosition })
+            const id = uuidv4();
+            const dragComponentPosition = draggedComponent.order;
+            const targetPosition = dropTargetComponent.order;
 
-            // update the order property of the component that is being replaced
-            const replacedComponent = newComponents.find(form => form.id === dropTargetComponent.id)
-            if (replacedComponent) {
-                replacedComponent.order = dragComponentPosition
-            }
+            // Remove the dragged component
+            const filteredComponents = state.formComponents.filter(form => form.id !== draggedComponent.id)
+
+            // Insert the dragged component at the new position
+            filteredComponents.splice(targetPosition, 0, { ...draggedComponent });
+
+            // Reassign order for all components
+            const newComponents = filteredComponents.map((component, idx) => ({
+                ...component,
+                order: idx
+            }))
+
+            // Add pending operation
+            state.pendingOperation.push({
+                id,
+                userId: state.userId,
+                payload: { draggedComponent, dropTargetComponent },
+                type: 'changeFormOrder',
+                timestamp: Date.now()
+            })
 
             wsInstance.send(JSON.stringify({
+                id,
                 type: 'changeFormOrder',
                 userId: state.userId,
                 draggedComponent,
                 dropTargetComponent,
                 timestamp: Date.now()
             }))
+
             return { formComponents: newComponents }
         }),
         removeFormComponent: (form) => set((state) => {
+            const id = uuidv4()
             const newFormComponents = state.formComponents.filter(comp => comp.id !== form.id)
 
             // Update the order of remaining components to maintain proper sequence
@@ -118,6 +151,15 @@ export const useFormStore = create<FormStore>()(
                 ...comp,
                 order: index
             }))
+
+            // add pending operation
+            state.pendingOperation.push({
+                id,
+                userId: state.userId,
+                payload: {formToRemove : form },
+                type: 'removeFormComponent',
+                timestamp: Date.now()
+            })
 
             // WS migration
             wsInstance.send(JSON.stringify({
@@ -137,6 +179,7 @@ export const useFormStore = create<FormStore>()(
         clearFormComponents: () => set({ formComponents: [] }),
         clearSelectedComponent: () => set({ selectedComponent: null }),
         updateComponentProperty: (componentId, property, value) => set((state) => {
+            const id = uuidv4()
             const newComponents = state.formComponents
                 .map(component => {
                     if (component.id === componentId) {
@@ -148,6 +191,16 @@ export const useFormStore = create<FormStore>()(
                     return component;
                 })
                 console.log(state.userId)
+
+            // add pending operation
+            state.pendingOperation.push({
+                id,
+                userId: state.userId,
+                payload: {componentId, property, value },
+                type: 'updateComponentProperty',
+                timestamp: Date.now()
+            })
+            
             wsInstance.send(JSON.stringify({
                 type: 'updateComponentProperty',
                 userId: state.userId,
