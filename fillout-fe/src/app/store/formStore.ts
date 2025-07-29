@@ -21,7 +21,7 @@ interface FormStore {
     selectComponent: (component: FormComponent | null) => void
     clearSelectedComponent: () => void
     updateComponentProperty: (componentId: string, property: keyof FormComponent, value: any) => void
-    setClientId: (userId: string) => void
+    setUserId: (userId: string) => void
 }
 
 /**
@@ -35,7 +35,7 @@ export const useFormStore = create<FormStore>()(
         formComponents: [],
         formMode: 'edit',
         selectedComponent: null,
-        setClientId: (userId: string) => set({ userId }),
+        setUserId: (userId: string) => set({ userId }),
         updateFormComponents: (newFormComponents) => set({ formComponents: newFormComponents}),
         changeFormMode: (mode) => set({ formMode: mode }),
         selectComponent: (component) => set({ selectedComponent: component }),
@@ -147,6 +147,7 @@ export const useFormStore = create<FormStore>()(
                     }
                     return component;
                 })
+                console.log(state.userId)
             wsInstance.send(JSON.stringify({
                 type: 'updateComponentProperty',
                 userId: state.userId,
