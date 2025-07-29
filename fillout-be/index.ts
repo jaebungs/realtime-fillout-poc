@@ -1,137 +1,77 @@
+// server.ts
 import WebSocket, { WebSocketServer } from 'ws'
 import { IncomingMessage } from 'http'
 import { v4 as uuidv4 } from 'uuid'
-import initialFieldAttributes from './utils/initialFieldAttributes'
+import { OTEngine } from './ot/engine'
+import { Operation } from './ot/types'
 import { FormComponent } from './types/componentTypes'
 
 const port = 6060
 
 const wss = new WebSocketServer({ port })
+const connectedClients = new Map<string, WebSocket>()
 
-const connectedClients = new Set()
-let formComponents: FormComponent[] = []
-
-function addFormComponent(componentName: string, userId: string) {
-  const order = formComponents.length
-  const initialAttributes = initialFieldAttributes[componentName]
-  const component: FormComponent = {
-    id: uuidv4(),
-    userId,
-    order,
-    componentName,
-    ...initialAttributes,
-  };
-  formComponents.push(component)
+// Initialize OT engine with state change callback
+function onStateChangeFn(components: FormComponent[], operation: Operation) {
+  broadcastOperation(components, operation)
 }
+const otEngine = new OTEngine(onStateChangeFn)
 
-function addFormComponentAtPosition(componentName: string, order: number, userId: string) {
-  const initialAttributes = initialFieldAttributes[componentName]
-  const component: FormComponent = {
-    id: uuidv4(),
-    userId,
-    order,
-    componentName,
-    ...initialAttributes,
-  };
-  const newFormComponents: FormComponent[] = [...formComponents]
-  newFormComponents.splice(order, 0, component)
-  // Update the order of all components after the insertion point
-  for (let i = order + 1; i < newFormComponents.length; i++) {
-    newFormComponents[i].order = i
+function broadcastOperation( formComponents: FormComponent[], operation: Operation) {
+  const message = {
+    type: 'operationApplied',
+    operation,
+    formComponents,
+    sequenceNumber: otEngine.getSequenceNumber(),
+    timestamp: new Date().toISOString(),
   }
-  formComponents = newFormComponents
-}
-
-function changeFormOrder(draggedComponent: FormComponent, dropTargetComponent: FormComponent, userId: string) {
-  const draggedIndex = draggedComponent.order
-  const dropIndex = dropTargetComponent.order
-  if (draggedIndex === -1 || dropIndex === -1) return
-
-  const newFormComponents = [...formComponents]
-  const [moved] = newFormComponents.splice(draggedIndex, 1)
-  newFormComponents.splice(dropIndex, 0, moved)
-
-  // update order only for the affected form components
-  const start = Math.min(draggedIndex, dropIndex)
-  const end = Math.max(draggedIndex, dropIndex)
-
-  for (let i = start; i <= end; i++) {
-    newFormComponents[i].order = i;
-  }
-
-  formComponents = newFormComponents
-}
-
-function removeFormComponent(targetComponent: FormComponent, userId: string) {
-  const newFormComponents = formComponents.filter(form => form.id !== targetComponent.id)
-  for (let i = targetComponent.order; i < newFormComponents.length; i++) {
-    newFormComponents[i].order = i
-  }
-
-  formComponents = newFormComponents
-}
-
-function updateComponentProperty(componentId: string, property : any, value : any, userId: string) {
-  const newFormComponents = formComponents.map(component =>
-    component.id === componentId ? { ...component, [property]: value } : component
-  )
-  formComponents = newFormComponents
-}
-
-function broadcastFormComponents(message: any) {
-  wss.clients.forEach((client) => {
+  console.log('broadcastOperation', message)
+  connectedClients.forEach((client, userId) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(
-        JSON.stringify({
-          type: 'broadcast',
-          message,
-          formComponents,
-          timestamp: new Date().toISOString(),
-        })
-      )
+      client.send(JSON.stringify(message))
     }
   })
 }
 
 // Handle new connections
 wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
-  const userId = uuidv4();
-  connectedClients.add(userId);
-  console.log(`New client connected from ${userId}`);
-  console.log('All connected client UUIDs:', Array.from(connectedClients));
+  const userId = uuidv4()
+  connectedClients.set(userId, ws)
+  console.log(`New client connected: ${userId}`)
 
-  // Send welcome message to new client - init
+  // Send welcome message with current state
   ws.send(
     JSON.stringify({
       type: 'welcome',
       message: 'Connected to WebSocket server',
-      formComponents,
+      formComponents: otEngine.getFormComponents(),
       userId,
+      sequenceNumber: otEngine.getSequenceNumber(),
       timestamp: new Date().toISOString(),
     })
   )
 
-  // Handle incoming messages from client
+  // Handle incoming messages
   ws.on('message', (data: WebSocket.RawData) => {
     try {
       const message = JSON.parse(data.toString())
-      console.log('Received:', message);
+      console.log('Received:', message)
 
-      if (message.type === 'addFormComponent') {
-        addFormComponent(message.componentName, message.userId)
-      } else if (message.type === 'addFormComponentAtPosition') {
-        addFormComponentAtPosition(message.componentName, message.order, message.userId)
-      } else if (message.type === 'changeFormOrder') {
-        changeFormOrder(message.draggedComponent, message.dropTargetComponent, message.userId)
-      } else if (message.type === 'removeFormComponent') {
-        removeFormComponent(message.targetComponent, message.userId)
-      } else if (message.type === 'updateComponentProperty') {
-        updateComponentProperty(message.componentId, message.property, message.value, message.userId)
+      // Convert message to operation and process with OT
+      const operation = OTEngine.createOperationFromMessage(message)
+      const success = otEngine.processOperation(operation)
+      
+      if (!success) {
+        ws.send(
+          JSON.stringify({
+            type: 'operationRejected',
+            message: 'Operation could not be applied',
+            operation,
+            timestamp: new Date().toISOString(),
+          })
+        )
       }
-      console.log('formComponents', formComponents)
-
-      // Broadcast to all clients
-      broadcastFormComponents(message);
+      
     } catch (error) {
       console.error('Error parsing message:', error)
       ws.send(
@@ -146,27 +86,30 @@ wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
 
   // Handle client disconnect
   ws.on('close', (code, reason) => {
-    connectedClients.delete(userId);
-    console.log(`Client disconnected. Code: ${code}, Reason: ${reason}`)
-    console.log('All connected client UUIDs:', Array.from(connectedClients))
-  });
+    connectedClients.delete(userId)
+    console.log(`Client disconnected: ${userId}. Code: ${code}, Reason: ${reason}`)
+  })
 
   // Handle errors
   ws.on('error', (error) => {
     console.error('WebSocket error:', error)
   })
 
-  // Send periodic ping to keep connection alive (optional)
+  // Keep connection alive
   const pingInterval = setInterval(() => {
     if (ws.readyState === WebSocket.OPEN) {
-      ws.ping();
+      ws.ping()
     } else {
-      clearInterval(pingInterval);
+      clearInterval(pingInterval)
     }
-  }, 30000); // Ping every 30 seconds
+  }, 30000)
 })
 
 // Handle server errors
 wss.on('error', (error) => {
   console.error('WebSocket Server error:', error)
 })
+
+console.log(`WebSocket server running on port ${port}`)
+
+export { otEngine, connectedClients }
