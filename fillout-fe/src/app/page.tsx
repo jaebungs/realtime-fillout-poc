@@ -10,8 +10,8 @@ import Preview from '@/app/components/Preview'
 export default function Home() {
   const setUserId = useFormStore(state => state.setUserId)
   const updateFormComponents = useFormStore(state => state.updateFormComponents)
+  const formComponents = useFormStore(state => state.formComponents)
   const formMode = useFormStore(state => state.formMode)
-  const [formComponents, setFormComponents] = useState([])
   const [isLoading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -22,12 +22,10 @@ export default function Home() {
       const data = JSON.parse(event.data)
       if (data.type === 'welcome' && data.formComponents) {
         setUserId(data.userId)
-        setFormComponents(data.formComponents)
         updateFormComponents(data.formComponents)
       }
       if (data.type === 'operationApplied' && data.formComponents) {
-        setFormComponents(data.formComponents)
-        updateFormComponents(data.formComponents)
+        useFormStore.getState().reconcileWithBackend(data.formComponents, data.operation?.operationId || null)
       }
     }
     wsInstance.onclose = () => {
