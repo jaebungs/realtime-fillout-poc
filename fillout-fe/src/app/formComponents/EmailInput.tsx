@@ -34,7 +34,17 @@ const EmailInput = (componentProp: EmailInputProps) => {
                     <label htmlFor='email-label' className="w-full">
                         <input name='email-label'
                             id="email-label"
-                            className='title-text w-full'
+                            className="
+                                title-text bg-white w-full transition border-b-2 pt-1 pb-1 pl-2 pr-8 border-white mb-1transition duration-200
+                                focus:bg-[rgb(242,242,242)]
+                                focus:outline-none focus:ring-0 
+                                focus:shadow-sm
+                                focus:border-[rgba(238,212,63,0.7)]
+                                focus:border-t-[rgba(238,212,63,0.7)]
+                                focus:border-l-[rgba(238,212,63,0.7)]
+                                focus:border-r-[rgba(238,212,63,0.7)]
+                            "
+                            // Really don't like changing browser default style - focus:outline-none focus:ring-0
                             value={localText}
                             onChange={handleLabelChange}
                         />
@@ -45,7 +55,7 @@ const EmailInput = (componentProp: EmailInputProps) => {
                             id="email-placeholder"
                             name="email-placeholder"
                             aria-label={ariaLabel}
-                            className={`w-full px-4 py-2 border rounded-md`}
+                            className={`title-text w-full px-4 py-2 border rounded-md`}
                             value={localPlaceholder}
                             onChange={handlePlaceholderChange}
                             placeholder={placeholder}
@@ -67,7 +77,7 @@ const EmailInput = (componentProp: EmailInputProps) => {
                         type="email"
                         name="email"
                         aria-label={ariaLabel}
-                        className={`w-full px-4 py-2 border rounded-md ${!emailValid ? 'border-red-500' : ''}`}
+                        className={`title-text w-full px-4 py-2 border rounded-md ${!emailValid ? 'border-red-500' : ''}`}
                         value={email}
                         onChange={handleChange}
                         placeholder={placeholder}

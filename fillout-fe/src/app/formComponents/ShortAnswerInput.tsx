@@ -31,7 +31,16 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
                     <input 
                         type='text'
                         name='short-answer-label'
-                        className="w-full"
+                        className="
+                            title-text bg-white w-full transition border-b-2 pt-1 pb-1 pl-2 pr-8 border-white mb-1transition duration-200
+                            focus:bg-[rgb(242,242,242)]
+                            focus:outline-none focus:ring-0 
+                            focus:shadow-sm
+                            focus:border-[rgba(238,212,63,0.7)]
+                            focus:border-t-[rgba(238,212,63,0.7)]
+                            focus:border-l-[rgba(238,212,63,0.7)]
+                            focus:border-r-[rgba(238,212,63,0.7)]
+                        "
                         value={localText}
                         onChange={handleLabelChange}
                     />
@@ -39,7 +48,7 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
                         type="text"
                         name="short-answer-placeholder"
                         aria-label={ariaLabel}
-                        className={`w-full px-4 py-2 border rounded-md`}
+                        className={`title-text w-full px-4 py-2 border rounded-md`}
                         value={localPlaceholder}
                         onChange={handlePlaceholderChange}
                         placeholder={placeholder}
@@ -61,7 +70,7 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
                         name="short-answer"
                         id="short-answer"
                         aria-label={ariaLabel}
-                        className={`w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
+                        className={`title-text w-full px-4 py-2 border rounded-md ${error ? 'border-red-500' : ''}`}
                         value={shortAnswer}
                         onChange={handleChange}
                         placeholder={placeholder}
