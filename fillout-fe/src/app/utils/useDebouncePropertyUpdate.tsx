@@ -5,7 +5,7 @@ export const useDebouncedComponentUpdate = (
   componentId: string,
   property: string,
   initialValue: string,
-  debounceMs: number = 300
+  debounceMs: number = 100
 ) => {
   const [localValue, setLocalValue] = useState(initialValue)
   const updateComponentProperty = useFormStore(state => state.updateComponentProperty)
