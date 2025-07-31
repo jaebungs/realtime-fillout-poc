@@ -182,7 +182,7 @@ export class OTEngine {
     }
 
     return {
-      id: uuidv4(),
+      operationId: message.operationId,
       type: typeMapping[message.type] || 'update',
       userId: message.userId,
       timestamp: message.timestamp || Date.now(),

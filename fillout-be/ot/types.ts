@@ -1,7 +1,7 @@
 import { FormComponent } from '../types/componentTypes'
 
 export interface Operation {
-  id: string
+  operationId: string
   type: 'add' | 'addAtPosition' | 'remove' | 'move' | 'update'
   userId: string
   timestamp: number
