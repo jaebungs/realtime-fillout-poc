@@ -24,7 +24,7 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
 
 
     return (
-        <div className="w-full flex flex-col">
+        <div className="w-full flex flex-col" data-testid="short-answer-component">
 
             {formMode === 'edit' && (
                 <div className="form-text-input">

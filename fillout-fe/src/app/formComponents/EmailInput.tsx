@@ -28,7 +28,7 @@ const EmailInput = (componentProp: EmailInputProps) => {
         useDebouncedComponentUpdate(id, 'placeholder', placeholder || '')
 
     return (
-        <div id={id} className="w-full flex flex-col">
+        <div id={id} className="w-full flex flex-col" data-testid="email-input-component">
             {formMode === 'edit' && (
                 <div className="form-text-input">
                     <label htmlFor='email-label' className="w-full">

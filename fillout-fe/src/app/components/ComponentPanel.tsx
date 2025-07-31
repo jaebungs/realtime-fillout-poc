@@ -40,6 +40,7 @@ const ComponentPanel = () => {
               draggable
               onDragStart={(e) => onDragStart(e, 'ShortAnswerInput')}
               onClick={() => onFieldComponentClick('ShortAnswerInput')}
+              data-testid="add-short-answer"
             >
               <div className="p-1 rounded text-[rgb(34,197,94)] bg-[rgb(240,253,244)] border-[0.5px] border-[rgb(187,247,208)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" className="h-5 w-5"><path fillRule="evenodd" d="M3 7a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 13a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
@@ -54,6 +55,7 @@ const ComponentPanel = () => {
               draggable
               onDragStart={(e) => onDragStart(e, 'EmailInput')}
               onClick={() => onFieldComponentClick('EmailInput')}
+              data-testid="add-email-input"
             >
               <div className="p-1 rounded text-[rgb(34,197,94)] bg-[rgb(240,253,244)] border-[0.5px] border-[rgb(187,247,208)]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" className="h-5 w-5"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
