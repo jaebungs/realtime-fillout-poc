@@ -1,5 +1,10 @@
 # Real time collaboration poc - Fillout
 
+/fillout-fe - Frontend
+/fillout-be - Backend
+npm install
+npm run dev
+
 Fillout with real-time collaboration features.
 Aiming to build a simple, single-page editor with scalability in mind.
 
@@ -78,3 +83,8 @@ transformedOperationB is created with the correct order proeprty (Transformed fr
   { id: "comp-2", order: 3, componentName: "Button" },
   { id: "comp-3", order: 4, componentName: "Checkbox" }
 ]
+
+
+# Thoughts
+Why change browser default foucs styling? e.g. input foucs style
+
