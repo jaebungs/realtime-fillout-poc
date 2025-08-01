@@ -1,14 +1,26 @@
 # Real time collaboration poc - Fillout
 
-/fillout-fe - Frontend
-/fillout-be - Backend
+## Goal
+This is a real-time collaborative form builder inspired by Fillout.com.
+The goal of this project is to learn WebSocket-based real-time systems by replicating key features of Fillout’s form editor.
+It's also a personal initiative to demonstrate interest in the company and hopefully open up an opportunity to interview there.
+
+This proof of concept (POC) focuses on simplicity, scalability, and performance, especially for small-scale collaboration (1–10 concurrent users).
+
+#### getting started:
+- FE:
+cd fillout-fe
 npm install
 npm run dev
 
-Fillout with real-time collaboration features.
-Aiming to build a simple, single-page editor with scalability in mind.
+-BE:
+cd fillout-be
+npm install
+npm run dev
 
+---------------------
 Built with NextJS, Typescript, Tailwind
+---------------------
 
 ## Devlopment Plan:
 1. Create some Basic input components first (text, email, number) (V)
@@ -28,6 +40,12 @@ Built with NextJS, Typescript, Tailwind
     - Conflict resolution strategy (V) 
     - move formComponent state and related CRUD logic to the server (V)
 8. Add preview/publish feature (V/X)
+
+## Architecture
+- Frontend (Next.js): Form editor UI, local optimistic state, connects via WebSocket
+- Backend (Node/Express + WebSocket): Receives operations, applies OT, broadcasts state
+- State is not stored on client; the server is the source of truth
+- Persistence layer (not implemented): Can be extended using a DB like PostgreSQL
 
 ## Backend
 #### Centralized State on the WebSocket Server
@@ -91,4 +109,5 @@ transformedOperationB is created with the correct order proeprty (Transformed fr
 - My development plan was not in order, however, worked as a good todo list.
 - Conflict handling is confusing tbh. I designed it assuming the concurrent user is less than a dozen.
   It'll work well with a few users.
+- Recnetly felt that the actual Fillout became slower
 - Used Playwright to simulate real concurrent addition. Cypress cannot support multiple browser, thus, Playwright
