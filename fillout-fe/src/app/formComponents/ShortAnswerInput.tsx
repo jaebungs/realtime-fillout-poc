@@ -48,7 +48,13 @@ const shortAnswerInput = (props: ShortAnswerInputProps) => {
                         type="text"
                         name="short-answer-placeholder"
                         aria-label={ariaLabel}
-                        className={`title-text w-full px-4 py-2 border rounded-md`}
+                        className={`title-text w-full px-4 py-2 border rounded-md border-gray-300
+                            focus:outline-none focus:ring-0 
+                            focus:border-[rgba(238,212,63,0.7)]
+                            focus:border-t-[rgba(238,212,63,0.7)]
+                            focus:border-l-[rgba(238,212,63,0.7)]
+                            focus:border-r-[rgba(238,212,63,0.7)]
+                        `}
                         value={localPlaceholder}
                         onChange={handlePlaceholderChange}
                         placeholder={placeholder}
