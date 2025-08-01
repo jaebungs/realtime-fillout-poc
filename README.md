@@ -11,23 +11,23 @@ Aiming to build a simple, single-page editor with scalability in mind.
 Built with NextJS, Typescript, Tailwind
 
 ## Devlopment Plan:
-1. Create some Basic input components first (text, email, number)
+1. Create some Basic input components first (text, email, number) (V)
     - Add validation
     - Keep in mind, edit and preview/published would have different UIs. For exmaple,
     there would be error message in the preview/published for email input.
     One EmailInput component can be used in the bothe views. 
-2. Add inline edit feature
-3. Setup State management tool
-4. Create Editor area (canvas are and component palette)
-5. Add draggable feature
+2. Add inline edit feature (V)
+3. Setup State management tool (V)
+4. Create Editor area (canvas are and component palette) (V)
+5. Add draggable feature (V)
  - Since it's a simple Drag and drop, I'll use HTML APIs
  - Every component have the same hover style, drag and edit pop overs. Make a wrapper component for this.
-6. Add components add/delete
+6. Add components add/delete (V)
 7. Add real-time collaboration
-    - User presnece indicator
-    - Conflict resolution strategy
-    - move formComponent state and related CRUD logic to the server
-8. Add preview/publish feature
+    - User presnece indicator (X)
+    - Conflict resolution strategy (V) 
+    - move formComponent state and related CRUD logic to the server (V)
+8. Add preview/publish feature (V/X)
 
 ## Backend
 #### Centralized State on the WebSocket Server
@@ -41,7 +41,7 @@ Operational Transform is a technique to maintain consistency in a collaborative 
 When two users perform simultaneously, OT transforms one operation based on the other to ensure all clients end up with the same final state.
 
 Let's use Operational Transform (OT). Here are the reasons:
-1. Undo/Redo - we need to track a history of operations
+1. Undo/Redo - we need to track a history of operations (Not implemented here, but future feature in case)
 2. Proven method and can handle concurrent edits gracefully
 3. Easy to extend - easy to add more operations(e.g adding more editable property or function)
 
@@ -85,6 +85,10 @@ transformedOperationB is created with the correct order proeprty (Transformed fr
 ]
 
 
-# Thoughts
-Why change browser default foucs styling? e.g. input foucs style
-
+### Some thoughts
+- Keep in mind that FE updates optimistically to give instant update UX instead of waiting for BE
+- Why change browser default foucs styling? e.g. input foucs style
+- My development plan was not in order, however, worked as a good todo list.
+- Conflict handling is confusing tbh. I designed it assuming the concurrent user is less than a dozen.
+  It'll work well with a few users.
+- Used Playwright to simulate real concurrent addition. Cypress cannot support multiple browser, thus, Playwright
